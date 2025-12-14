@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
+import dynamic from "next/dynamic"
 import { Mic, Wifi, Bot, BarChart3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -8,6 +9,15 @@ import { Input } from "@/components/ui/input"
 
 // Some environments (or editor tooling) may not include Node typings.
 declare const process: { env: Record<string, string | undefined> }
+
+const Plot = dynamic(
+  async () => {
+    const Plotly = (await import("plotly.js-dist-min")).default
+    const createPlotlyComponent = (await import("react-plotly.js/factory")).default
+    return createPlotlyComponent(Plotly)
+  },
+  { ssr: false },
+)
 
 export default function FactoryVoiceAssistant() {
   const [isListening, setIsListening] = useState(false)
@@ -18,7 +28,7 @@ export default function FactoryVoiceAssistant() {
   const [pipelineStatus, setPipelineStatus] = useState<string | null>(null)
   const [backendOk, setBackendOk] = useState<boolean | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [visualizationSrc, setVisualizationSrc] = useState<string | null>(null)
+  const [plotlyFigure, setPlotlyFigure] = useState<any | null>(null)
   const [audioSrc, setAudioSrc] = useState<string | null>(null)
   const [typedQuestion, setTypedQuestion] = useState("")
 
@@ -65,11 +75,10 @@ export default function FactoryVoiceAssistant() {
     }
 
     const viz = data?.visualization
-    if (viz?.image_base64) {
-      const mime = viz?.mime_type || "image/png"
-      setVisualizationSrc(`data:${mime};base64,${viz.image_base64}`)
+    if (viz?.type === "plotly" && viz?.figure) {
+      setPlotlyFigure(viz.figure)
     } else {
-      setVisualizationSrc(null)
+      setPlotlyFigure(null)
     }
 
     const aud = data?.audio
@@ -124,7 +133,7 @@ export default function FactoryVoiceAssistant() {
     setOperatorMessage(q)
     setRecognizedQuestion(null)
     setAiResponse("")
-    setVisualizationSrc(null)
+    setPlotlyFigure(null)
     setAudioSrc(null)
     setIsProcessing(true)
     setPipelineStatus("Generating answer…")
@@ -148,7 +157,7 @@ export default function FactoryVoiceAssistant() {
       setOperatorMessage("")
       setRecognizedQuestion(null)
       setAiResponse("")
-      setVisualizationSrc(null)
+      setPlotlyFigure(null)
       setAudioSrc(null)
       setPipelineStatus("Recording…")
 
@@ -348,9 +357,23 @@ export default function FactoryVoiceAssistant() {
               <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold uppercase tracking-wider">Visual Output</h3>
             </div>
             <Card className="!bg-gray-900/30 border-gray-800 p-8 xl:p-10 2xl:p-12 h-64 xl:h-80 2xl:h-96 flex items-center justify-center">
-              {visualizationSrc ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={visualizationSrc} alt="Visualization" className="w-full h-full object-contain" />
+              {plotlyFigure ? (
+                <div className="w-full h-full">
+                  <Plot
+                    data={plotlyFigure.data}
+                    layout={{
+                      ...(plotlyFigure.layout || {}),
+                      autosize: true,
+                      paper_bgcolor: "rgba(0,0,0,0)",
+                      plot_bgcolor: "rgba(0,0,0,0)",
+                      font: { color: "#e5e7eb" },
+                      title: plotlyFigure.layout?.title || undefined,
+                    }}
+                    config={{ responsive: true, displayModeBar: false }}
+                    style={{ width: "100%", height: "100%" }}
+                    useResizeHandler
+                  />
+                </div>
               ) : (
                 <p className="text-sm xl:text-base 2xl:text-lg text-gray-600 text-center">
                   Data visualizations will appear here
