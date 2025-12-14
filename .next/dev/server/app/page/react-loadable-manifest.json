@@ -1,1 +1,17 @@
-{}
+{
+  "[project]/node_modules/react-plotly.js/factory.js [app-client] (ecmascript, next/dynamic entry)": {
+    "id": "[project]/node_modules/react-plotly.js/factory.js [app-client] (ecmascript, next/dynamic entry)",
+    "files": [
+      "static/chunks/node_modules_a7b0a0cc._.js",
+      "static/chunks/node_modules_react-plotly_js_factory_a1dab999.js"
+    ]
+  },
+  "[project]/node_modules/plotly.js-dist-min/plotly.min.js [app-client] (ecmascript, next/dynamic entry)": {
+    "id": "[project]/node_modules/plotly.js-dist-min/plotly.min.js [app-client] (ecmascript, next/dynamic entry)",
+    "files": [
+      "static/chunks/node_modules_plotly_js-dist-min_plotly_min_00f5bb19.js",
+      "static/chunks/node_modules_plotly_js-dist-min_plotly_min_24271856.js",
+      "static/chunks/node_modules_plotly_js-dist-min_plotly_min_a1dab999.js"
+    ]
+  }
+}

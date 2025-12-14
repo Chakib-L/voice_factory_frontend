@@ -67,11 +67,24 @@ export default function FactoryVoiceAssistant() {
     }
   }
 
+  const cleanOperatorText = (text: string): string => {
+    if (!text) return text
+    // Remove SPEAKER_XX patterns (e.g., "SPEAKER_00:", "SPEAKER_01:", etc.)
+    let cleaned = text.replace(/SPEAKER_\d+:\s*/gi, "")
+    // Remove timestamps in various formats: [00:00:00], [00:00], (00:00:00), (00:00), etc.
+    cleaned = cleaned.replace(/\[?\d{1,2}:\d{2}(?::\d{2})?\]?\s*/g, "")
+    // Remove any remaining speaker labels at the start
+    cleaned = cleaned.replace(/^SPEAKER\s*\d*\s*:?\s*/i, "")
+    // Clean up extra whitespace
+    cleaned = cleaned.trim().replace(/\s+/g, " ")
+    return cleaned
+  }
+
   const applyBackendResponse = (data: any) => {
     setAiResponse(typeof data?.answer_text === "string" ? data.answer_text : "")
     setRecognizedQuestion(typeof data?.question_text === "string" ? data.question_text : null)
     if (typeof data?.question_text === "string" && data.question_text.trim()) {
-      setOperatorMessage(data.question_text.trim())
+      setOperatorMessage(cleanOperatorText(data.question_text.trim()))
     }
 
     const viz = data?.visualization
@@ -180,8 +193,9 @@ export default function FactoryVoiceAssistant() {
             const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "audio/webm" })
             const stt = await sendAudioToBackend(blob)
             const q = typeof stt?.question_text === "string" ? stt.question_text : ""
-            setOperatorMessage(q || "STT returned empty text.")
-            setRecognizedQuestion(q || null)
+            const cleanedQ = q ? cleanOperatorText(q) : ""
+            setOperatorMessage(cleanedQ || "STT returned empty text.")
+            setRecognizedQuestion(cleanedQ || null)
 
             if (!q) throw new Error("STT returned empty text.")
 
@@ -247,8 +261,8 @@ export default function FactoryVoiceAssistant() {
       </header>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[calc(100vh-73px)] lg:h-[calc(100vh-73px)] xl:h-[calc(100vh-85px)] 2xl:h-[calc(100vh-97px)] max-w-[1920px] mx-auto">
-        {/* Left Panel - Operator Message */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 min-h-[calc(100vh-73px)] lg:h-[calc(100vh-73px)] xl:h-[calc(100vh-85px)] 2xl:h-[calc(100vh-97px)] max-w-[1920px] mx-auto">
+        {/* Left Panel - Operator Message (1/3) */}
         <div className="border-b lg:border-b-0 lg:border-r border-gray-800 p-6 xl:p-8 2xl:p-12 flex flex-col bg-[#0a1425] min-h-[50vh] lg:min-h-0">
           <div className="mb-6 xl:mb-8 2xl:mb-10">
             <div className="flex items-center gap-3 xl:gap-4 mb-2 xl:mb-3">
@@ -304,7 +318,7 @@ export default function FactoryVoiceAssistant() {
             {/* Question Display */}
             <Card className="w-full max-w-md xl:max-w-lg 2xl:max-w-xl mt-8 xl:mt-10 2xl:mt-12 !bg-gray-900/50 border-gray-800 p-6 xl:p-8 2xl:p-10">
               <p className="text-sm xl:text-base 2xl:text-lg text-gray-500 italic font-mono">
-                {operatorMessage || "Your question will appear here..."}
+                {operatorMessage ? cleanOperatorText(operatorMessage) : "Your question will appear here..."}
               </p>
               {pipelineStatus ? (
                 <p className="text-xs xl:text-sm 2xl:text-base text-gray-400 mt-3">{pipelineStatus}</p>
@@ -319,8 +333,8 @@ export default function FactoryVoiceAssistant() {
           </div>
         </div>
 
-        {/* Right Panel - AI Response */}
-        <div className="p-6 xl:p-8 2xl:p-12 flex flex-col bg-[#0a1425] min-h-[50vh] lg:min-h-0">
+        {/* Right Panel - AI Response (2/3) */}
+        <div className="lg:col-span-2 p-6 xl:p-8 2xl:p-12 flex flex-col bg-[#0a1425] min-h-[50vh] lg:min-h-0">
           <div className="mb-6 xl:mb-8 2xl:mb-10">
             <div className="flex items-center gap-3 xl:gap-4 mb-2 xl:mb-3">
               <div className="w-8 h-8 xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 rounded-full bg-teal-500/20 flex items-center justify-center">

@@ -148,10 +148,12 @@
 @layer theme {
   :root, :host {
     --color-red-50: #fef2f2;
+    --color-red-200: #ffcaca;
     --color-red-300: #ffa3a3;
     --color-red-400: #ff6568;
     --color-red-500: #fb2c36;
     --color-red-600: #e40014;
+    --color-red-900: #82181a;
     --color-yellow-500: #edb200;
     --color-green-500: #00c758;
     --color-teal-400: #00d3bd;
@@ -209,10 +211,12 @@
   @supports (color: lab(0% 0 0)) {
     :root, :host {
       --color-red-50: lab(96.5005% 4.18508 1.52328);
+      --color-red-200: lab(86.017% 19.8815 7.75869);
       --color-red-300: lab(76.5514% 36.422 15.5335);
       --color-red-400: lab(63.7053% 60.745 31.3109);
       --color-red-500: lab(55.4814% 75.0732 48.8528);
       --color-red-600: lab(48.4493% 77.4328 61.5452);
+      --color-red-900: lab(28.5139% 44.5539 29.0463);
       --color-yellow-500: lab(76.3898% 14.5258 98.4589);
       --color-green-500: lab(70.5521% -66.5147 45.8073);
       --color-teal-400: lab(76.0109% -53.3483 -2.27906);
@@ -740,6 +744,10 @@
 
   .mt-2 {
     margin-top: calc(var(--spacing) * 2);
+  }
+
+  .mt-3 {
+    margin-top: calc(var(--spacing) * 3);
   }
 
   .mt-4 {
@@ -1472,6 +1480,12 @@
     gap: calc(var(--spacing) * 7);
   }
 
+  :where(.space-y-3 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 3) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-y-reverse)));
+  }
+
   :where(.space-y-4 > :not(:last-child)) {
     --tw-space-y-reverse: 0;
     margin-block-start: calc(calc(var(--spacing) * 4) * var(--tw-space-y-reverse));
@@ -1657,6 +1671,16 @@
     border-color: var(--primary);
   }
 
+  .border-red-900\/40 {
+    border-color: #82181a66;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .border-red-900\/40 {
+      border-color: color-mix(in oklab, var(--color-red-900) 40%, transparent);
+    }
+  }
+
   .border-sidebar-border {
     border-color: var(--sidebar-border);
   }
@@ -1690,6 +1714,16 @@
   @supports (color: color-mix(in lab, red, red)) {
     .\!bg-gray-900\/50 {
       background-color: color-mix(in oklab, var(--color-gray-900) 50%, transparent) !important;
+    }
+  }
+
+  .\!bg-red-900\/20 {
+    background-color: #82181a33 !important;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .\!bg-red-900\/20 {
+      background-color: color-mix(in oklab, var(--color-red-900) 20%, transparent) !important;
     }
   }
 
@@ -1741,6 +1775,16 @@
 
   .bg-gray-800 {
     background-color: var(--color-gray-800);
+  }
+
+  .bg-gray-900\/50 {
+    background-color: #10182880;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-gray-900\/50 {
+      background-color: color-mix(in oklab, var(--color-gray-900) 50%, transparent);
+    }
   }
 
   .bg-green-500 {
@@ -2180,6 +2224,14 @@
 
   .text-primary-foreground {
     color: var(--primary-foreground);
+  }
+
+  .text-red-200 {
+    color: var(--color-red-200);
+  }
+
+  .text-red-400 {
+    color: var(--color-red-400);
   }
 
   .text-secondary-foreground {
@@ -2770,6 +2822,10 @@
 
   .file\:text-foreground::file-selector-button {
     color: var(--foreground);
+  }
+
+  .placeholder\:text-gray-500::placeholder {
+    color: var(--color-gray-500);
   }
 
   .placeholder\:text-muted-foreground::placeholder {
@@ -4370,6 +4426,12 @@
   }
 
   @media (min-width: 64rem) {
+    .lg\:col-span-2 {
+      grid-column: span 2 / span 2;
+    }
+  }
+
+  @media (min-width: 64rem) {
     .lg\:h-\[calc\(100vh-73px\)\] {
       height: calc(100vh - 73px);
     }
@@ -4382,8 +4444,8 @@
   }
 
   @media (min-width: 64rem) {
-    .lg\:grid-cols-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .lg\:grid-cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
@@ -4560,6 +4622,12 @@
   }
 
   @media (min-width: 80rem) {
+    .xl\:p-6 {
+      padding: calc(var(--spacing) * 6);
+    }
+  }
+
+  @media (min-width: 80rem) {
     .xl\:p-7 {
       padding: calc(var(--spacing) * 7);
     }
@@ -4626,12 +4694,6 @@
   @media (min-width: 96rem) {
     .\32 xl\:mt-12 {
       margin-top: calc(var(--spacing) * 12);
-    }
-  }
-
-  @media (min-width: 96rem) {
-    .\32 xl\:mb-4 {
-      margin-bottom: calc(var(--spacing) * 4);
     }
   }
 
@@ -4748,6 +4810,12 @@
       --tw-space-y-reverse: 0;
       margin-block-start: calc(calc(var(--spacing) * 8) * var(--tw-space-y-reverse));
       margin-block-end: calc(calc(var(--spacing) * 8) * calc(1 - var(--tw-space-y-reverse)));
+    }
+  }
+
+  @media (min-width: 96rem) {
+    .\32 xl\:p-8 {
+      padding: calc(var(--spacing) * 8);
     }
   }
 
